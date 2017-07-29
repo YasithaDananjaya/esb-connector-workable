@@ -1,0 +1,90 @@
+<!--
+   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+   WSO2 Inc. licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file except
+   in compliance with the License.
+   You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied. See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<template xmlns="http://ws.apache.org/ns/synapse" name="getCandidates">
+    <!--optional parameters-->
+    <parameter name="shortCode" description="The job's system generated code"/>
+    <parameter name="stage" description="The job's stage slug, can be retrieved from the /stages endpoint"/>
+    <parameter name="limit" description="Specifies the number of jobs to try and retrieve per page"/>
+    <parameter name="sinceId" description="Returns results with an ID greater than or equal to the specified ID. "/>
+    <parameter name="maxId" description="Returns results with an ID less than or equal to the specified ID. "/>
+    <parameter name="createdAfter" description="Returns results created after the specified timestamp"/>
+    <parameter name="updatedAfter" description="Returns results updated after the specified timestamp. "/>
+    <sequence>
+        <property name="uri.var.shortCode" expression="$func:shortCode"/>
+        <property name="uri.var.stage" expression="$func:stage"/>
+        <property name="uri.var.limit" expression="$func:limit"/>
+        <property name="uri.var.sinceId" expression="$func:sinceId"/>
+        <property name="uri.var.maxId" expression="$func:maxId"/>
+        <property name="uri.var.createdAfter" expression="$func:createdAfter"/>
+        <property name="uri.var.updatedAfter" expression="$func:updatedAfter"/>
+        <script language="js">
+            <![CDATA[
+                var shortCode=mc.getProperty('uri.var.shortCode');
+                var stage=mc.getProperty('uri.var.stage');
+                var limit=mc.getProperty('uri.var.limit');
+                var sinceId=mc.getProperty('uri.var.sinceId');
+                var maxId=mc.getProperty('uri.var.maxId');
+                var createdAfter=mc.getProperty('uri.var.createdAfter');
+                var updatedAfter=mc.getProperty('uri.var.updatedAfter');
+                var urlQuery = '';
+                if (shortCode != null && shortCode != ""){
+                    urlQuery = urlQuery.concat('shortcode=',shortCode , '&') ;
+                }
+                if (stage != null && stage != ""){
+                    urlQuery = urlQuery.concat('stage=',stage ,'&') ;
+                }
+                if (limit != null && limit != ""){
+                    urlQuery = urlQuery.concat('limit=',limit ,'&') ;
+                }
+                if (sinceId != null && sinceId != ""){
+                    urlQuery = urlQuery.concat('since_id=',sinceId ,'&') ;
+                }
+                if (maxId != null && maxId != ""){
+                    urlQuery = urlQuery.concat('max_id=',maxId ,'&') ;
+                }
+               if (createdAfter != null && createdAfter != ""){
+                    urlQuery = urlQuery.concat('created_after=',createdAfter ,'&') ;
+                }
+                if (updatedAfter != null && updatedAfter != ""){
+                    urlQuery = urlQuery.concat('updated_after=',updatedAfter , '&') ;
+                }
+                if(urlQuery!=''){
+                    urlQuery='?'+urlQuery;
+                }
+                mc.setProperty('uri.var.urlQuery',urlQuery);
+            ]]>
+        </script>
+        <header name="Authorization" scope="transport" expression="fn:concat('Bearer ',$ctx:uri.var.accessToken)"/>
+        <filter source="$ctx:workableBlocking" regex="true">
+            <then>
+                <call blocking="true">
+                    <endpoint>
+                        <http method="GET" uri-template="{uri.var.apiUrl}/candidates{+uri.var.urlQuery}"/>
+                    </endpoint>
+                </call>
+            </then>
+            <else>
+                <call>
+                    <endpoint>
+                        <http method="GET" uri-template="{uri.var.apiUrl}/candidates{+uri.var.urlQuery}"/>
+                    </endpoint>
+                </call>
+            </else>
+        </filter>
+    </sequence>
+</template>

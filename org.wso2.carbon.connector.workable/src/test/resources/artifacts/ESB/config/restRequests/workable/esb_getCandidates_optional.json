@@ -1,0 +1,12 @@
+{
+  "accessToken": "%s(accessToken)",
+  "apiVersion": "%s(apiVersion)",
+  "subDomain": "%s(subDomain)",
+  "shortCode": "%s(shortCode)",
+  "stage": "%s(stage)",
+  "limit": "%s(limit)",
+  "sinceId": "%s(sinceId)",
+  "maxId": "%s(maxId)",
+  "createdAfter": "%s(createdAfter)",
+  "updatedAfter": "%s(updatedAfter)"
+}

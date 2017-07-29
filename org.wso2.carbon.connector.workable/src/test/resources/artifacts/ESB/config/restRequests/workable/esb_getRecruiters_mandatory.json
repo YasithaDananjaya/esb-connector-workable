@@ -1,0 +1,5 @@
+{
+  "accessToken": "%s(accessToken)",
+  "apiVersion": "%s(apiVersion)",
+  "subDomain": "%s(subDomain)"
+}

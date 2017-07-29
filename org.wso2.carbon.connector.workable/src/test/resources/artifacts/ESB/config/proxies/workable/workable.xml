@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+       name="workable"
+       startOnLoad="true"
+       statistics="disable"
+       trace="disable"
+       transports="http,https">
+   <target>
+      <inSequence>
+         <property expression="json-eval($.apiUrl)" name="apiUrl"/>
+         <property expression="json-eval($.accessToken)" name="accessToken"/>
+         <property expression="json-eval($.apiVersion)" name="apiVersion"/>
+         <property expression="json-eval($.subDomain)" name="subDomain"/>
+         <property expression="json-eval($.shortCode)" name="shortCode"/>
+         <property expression="json-eval($.id)" name="id"/>
+         <property expression="json-eval($.limit)" name="limit"/>
+         <property expression="json-eval($.sinceId)" name="sinceId"/>
+         <property expression="json-eval($.maxId)" name="maxId"/>
+         <property expression="json-eval($.role)" name="role"/>
+         <property expression="json-eval($.state)" name="state"/>
+         <property expression="json-eval($.createdAfter)" name="createdAfter"/>
+         <property expression="json-eval($.updatedAfter)" name="updatedAfter"/>
+         <property expression="json-eval($.includeFields)" name="includeFields"/>
+         <property expression="json-eval($.stage)" name="stage"/>
+         <property expression="json-eval($.blocking)" name="blocking"/>
+         <workable.init>
+            <apiUrl>{$ctx:apiUrl}</apiUrl>
+            <accessToken>{$ctx:accessToken}</accessToken>
+            <apiVersion>{$ctx:apiVersion}</apiVersion>
+            <subDomain>{$ctx:subDomain}</subDomain>
+            <workableBlocking>{$ctx:blocking}</workableBlocking>
+         </workable.init>
+         <switch source="get-property('transport','Action')">
+            <case regex="urn:getAccounts">
+               <workable.getAccounts/>
+            </case>
+            <case regex="urn:getMembers">
+               <workable.getMembers>
+                  <limit>{$ctx:limit}</limit>
+                  <sinceId>{$ctx:sinceId}</sinceId>
+                  <maxId>{$ctx:maxId}</maxId>
+                  <role>{$ctx:role}</role>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+               </workable.getMembers>
+            </case>
+            <case regex="urn:getRecruiters">
+               <workable.getRecruiters>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+               </workable.getRecruiters>
+            </case>
+            <case regex="urn:getStages">
+               <workable.getStages/>
+            </case>
+            <case regex="urn:getJobs">
+               <workable.getJobs>
+                  <state>{$ctx:state}</state>
+                  <limit>{$ctx:limit}</limit>
+                  <sinceId>{$ctx:sinceId}</sinceId>
+                  <maxId>{$ctx:maxId}</maxId>
+                  <createdAfter>{$ctx:createdAfter}</createdAfter>
+                  <updatedAfter>{$ctx:updatedAfter}</updatedAfter>
+                  <includeFields>{$ctx:includeFields}</includeFields>
+               </workable.getJobs>
+            </case>
+            <case regex="urn:getJobByShortCode">
+               <workable.getJobByShortCode>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+               </workable.getJobByShortCode>
+            </case>
+            <case regex="urn:getJobByShortCodeActivities">
+               <workable.getJobByShortCodeActivities>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+                  <limit>{$ctx:limit}</limit>
+                  <sinceId>{$ctx:sinceId}</sinceId>
+                  <maxId>{$ctx:maxId}</maxId>
+               </workable.getJobByShortCodeActivities>
+            </case>
+            <case regex="urn:getJobByShortCodeApplicationForm">
+               <workable.getJobByShortCodeApplicationForm>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+               </workable.getJobByShortCodeApplicationForm>
+            </case>
+            <case regex="urn:getJobByShortCodeQuestions">
+               <workable.getJobByShortCodeQuestions>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+               </workable.getJobByShortCodeQuestions>
+            </case>
+            <case regex="urn:getJobByShortCodeStages">
+               <workable.getJobByShortCodeStages>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+               </workable.getJobByShortCodeStages>
+            </case>
+            <case regex="urn:getCandidates">
+               <workable.getCandidates>
+                  <shortCode>{$ctx:shortCode}</shortCode>
+                  <stage>{$ctx:stage}</stage>
+                  <limit>{$ctx:limit}</limit>
+                  <sinceId>{$ctx:sinceId}</sinceId>
+                  <maxId>{$ctx:maxId}</maxId>
+                  <createdAfter>{$ctx:createdAfter}</createdAfter>
+                  <updatedAfter>{$ctx:updatedAfter}</updatedAfter>
+               </workable.getCandidates>
+            </case>
+            <case regex="urn:getCandidateById">
+               <workable.getCandidateById>
+                  <id>{$ctx:id}</id>
+               </workable.getCandidateById>
+            </case>
+         </switch>
+         <respond/>
+      </inSequence>
+   </target>
+   <description/>
+</proxy>
+                                

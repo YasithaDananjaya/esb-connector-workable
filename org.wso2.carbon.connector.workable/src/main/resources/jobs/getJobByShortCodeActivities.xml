@@ -1,0 +1,70 @@
+<!--
+   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+   WSO2 Inc. licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file except
+   in compliance with the License.
+   You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied. See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<template xmlns="http://ws.apache.org/ns/synapse" name="getJobByShortCodeActivities">
+    <parameter name="shortCode" description="The shortcode for particular job "/>
+    <!--optional parameters-->
+    <parameter name="limit" description="Specifies the number of members to try and retrieve per page"/>
+    <parameter name="sinceId" description="Returns results with an ID greater than or equal to the specified ID. "/>
+    <parameter name="maxId" description="Returns results with an ID less than or equal to the specified ID. "/>
+    <sequence>
+        <property name="uri.var.shortCode" expression="$func:shortCode"/>
+        <property name="uri.var.limit" expression="$func:limit"/>
+        <property name="uri.var.sinceId" expression="$func:sinceId"/>
+        <property name="uri.var.maxId" expression="$func:maxId"/>
+        <script language="js">
+            <![CDATA[
+                var limit=mc.getProperty('uri.var.limit');
+                var sinceId=mc.getProperty('uri.var.sinceId');
+                var maxId=mc.getProperty('uri.var.maxId');
+                var urlQuery = '';
+                if (limit != null && limit != ""){
+                    urlQuery = urlQuery.concat('limit=',limit, '&') ;
+                }
+                if (sinceId != null && sinceId != ""){
+                    urlQuery = urlQuery.concat('since_id=',sinceId, '&') ;
+                }
+                if (maxId != null && maxId != ""){
+                    urlQuery = urlQuery.concat('max_id=',maxId, '&') ;
+                }
+                if(urlQuery!=''){
+                    urlQuery='?'+urlQuery;
+                }
+                mc.setProperty('uri.var.urlQuery',urlQuery);
+            ]]>
+        </script>
+        <header name="Authorization" scope="transport" expression="fn:concat('Bearer ',$ctx:uri.var.accessToken)"/>
+        <filter source="$ctx:workableBlocking" regex="true">
+            <then>
+                <call blocking="true">
+                    <endpoint>
+                        <http method="GET"
+                              uri-template="{uri.var.apiUrl}/jobs/{uri.var.shortCode}/activities{+uri.var.urlQuery}"/>
+                    </endpoint>
+                </call>
+            </then>
+            <else>
+                <call>
+                    <endpoint>
+                        <http method="GET"
+                              uri-template="{uri.var.apiUrl}/jobs/{uri.var.shortCode}/activities{+uri.var.urlQuery}"/>
+                    </endpoint>
+                </call>
+            </else>
+        </filter>
+    </sequence>
+</template>
